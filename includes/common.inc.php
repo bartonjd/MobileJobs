@@ -1,6 +1,6 @@
 <?php
-			require_once('linkedin/linkedInUsers.php');
-	
+	require_once('linkedin/linkedInUsers.php');
+	ini_set('magic_quotes_gpc',false);
     class Page {
     	public $loginConfig;
     	public $URL;
@@ -8,9 +8,6 @@
     	private $linkedIn;
     	
     	public function __construct (){
-
-
-			
 			session_start();
 			$this->docURL = $_SERVER['PHP_SELF'];
 			$this->URL = "docURL = '$this->docURL';\n";
@@ -35,11 +32,11 @@ EOT;
 		}
 		public function commonHeader ($title=null) {
 			if (!isset($title)){
-				$title = 'Utah State University';
+				$title = 'MIS JOBS @ USU';
 			}
 			echo <<<EOT
 				<div data-theme="b" data-role="header" class="header">
-            		<a href="#" data-role="button" data-icon="home" data-theme="d">Home</a>
+            		<a href="/" data-role="button" data-icon="home" data-theme="d">Home</a>
                 	<h1>
                     	$title
                     </h1>
@@ -62,8 +59,5 @@ EOT;
 			}
 		}
 	}    
-	if ($_REQUEST['lType'] == 'revoke'){
-		// clear the url of any GET parameters such as 'lType'
-		header('location:index.php');
-	}
+
 ?>

@@ -108,7 +108,7 @@
     		return count($this->errors);
     	}
     	
-    	public function getSQL_LOG (){
+    	public function getSQL (){
     		echo var_dump($this->SQL_LOG);	
     	}
     	

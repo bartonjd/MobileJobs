@@ -30,7 +30,17 @@ $page = new Page();
 	        	$('#account__login').live('click',function(){
 	        		switch (loginConfig.action){
 		        		case 'revoke':
-		        			$.mobile.navigate(window.location + '?lType=revoke');
+		        			$.ajax({
+						        type: "POST",
+						        url: 'includes/client-ajax/user.php?lType=revoke',
+						        dataType: "json",
+						        success: function(data) {
+							        loginConfig.state = 'signedout';
+							        loginConfig.action = 'initiate';
+							        window.location = docURL;
+						        }
+						     });
+
 		        		break;
 		        		case 'initiate':
 		        			window.location = docURL+'?lType=initiate';
@@ -40,10 +50,6 @@ $page = new Page();
 		        });
 	        });
         </script>
-        <!-- User-generated css -->
-        <style>
-        </style>
-        <!-- User-generated js -->
         <script>
             try {
 

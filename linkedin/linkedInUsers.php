@@ -120,6 +120,8 @@ class LinkedInAuthMgr {
                         if ($response['success'] === TRUE) {
                             // store the request token
                             $_SESSION['oauth']['linkedin']['request'] = $response['linkedin'];
+                            $this->linkedInResponse = $response['linkedin'] ;
+                           
 
                             // redirect the user to the LinkedIn authentication/authorisation page to initiate validation.
                             header('Location: '.LINKEDIN::_URL_AUTH.$response['linkedin']['oauth_token']);
@@ -138,6 +140,7 @@ class LinkedInAuthMgr {
 
                             // set the user as authorized for future quick reference
                             $_SESSION['oauth']['linkedin']['authorized'] = TRUE;
+                            $this->linkedInResponse = $response['linkedin'] ;
 
                             // redirect the user back to the demo page
                             header('Location: '.$_SERVER['PHP_SELF']);
@@ -245,6 +248,26 @@ class LinkedInAuthMgr {
             // exception raised by library call
         }
     }
+    public function getProfileData(){
+    	
+	    return $this->convertXML2Array($this->linkedInResponse);    
+    }
+    public function getUserData(){
+	    $data = $this->getProfileData();
+	    $db = connect2DB();
+	    $sql = "SELECT * FROM users WHERE email_address = $1";
+	    $params = array($data['email-address']);
+        $query = pg_query_params($db, $sql, $params);
+        $result = pg_num_rows($query);
+
+        if ($result == 1) {
+	       $account = pg_fetch_assoc($query,0);
+	       return $account;
+        } else {
+        	$this->logError('Problem getting user account info');
+	        return array();
+        }
+    }
     public function isLoggedIn(){
 		if ($this->loggedInState == 'signedin'){
 			return true;
@@ -261,8 +284,8 @@ class LinkedInAuthMgr {
         $query = pg_query_params($db, $sql, $params);
         $result = pg_num_rows($query);
 
-        if ($result = 0) {
-            $jtb = new JSONTableBridge('users', null, array('email-address' => 'email_address', 'first-name' => 'first_name', 'last-name' => 'last_name', 'picture-url' => '{false}', 'id' => '{false}'), $db);
+        if ($result == 0) {
+            $jtb = new JSONTableBridge('users', null, array('last_modified'=>'{datetime}','email-address' => 'email_address', 'first-name' => 'first_name', 'last-name' => 'last_name', 'picture-url' => '{false}', 'id' => '{false}'), $db);
             $jsonData = json_encode($data);
             $jtb -> CREATE($jsonData, NULL, true);
         }
@@ -296,6 +319,14 @@ class LinkedInAuthMgr {
     private function logError($msg){
 	    array_push($this->errorMsg,$msg);
 	    
+    }
+    public function updateNotifyOption($input){
+	    $db = connect2DB();
+	    $data = $this->getProfileData();
+        $jtb = new JSONTableBridge('users', 'email_address', array('last_modified'=>'{datetime}','email_address'=>"[".$data['email-address']."]"), $db);
+        $jtb->UPDATE(json_encode($input));
+        die($jtb->getSQL());
+ 
     }
 }
 ?>
