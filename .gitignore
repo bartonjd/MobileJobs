@@ -12,6 +12,7 @@
 ###########
 appConstants.inc.php
 includes/appConstants.inc.php
+error_log
 
 # Packages #
 ############
