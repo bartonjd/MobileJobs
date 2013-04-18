@@ -1,8 +1,6 @@
 <?php
 	require_once('linkedin/linkedInUsers.php');
-	ini_set('magic_quotes_gpc',false);
     class Page {
-    	public $loginConfig;
     	public $URL;
     	private $docURL;
     	private $linkedIn;
@@ -24,21 +22,29 @@
 	        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 	        <title></title>
 	        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.css" />
+	        <link rel="stylesheet" href="css/mobiscroll.2.5.0.min.css" />
+	        <link rel="stylesheet" href="css/jquery.tagsinput.css" />
+	        
 	        <link rel="stylesheet" href="css/my.css" />
 	        <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
-	        <script src="http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.js"></script>
+            <script src="http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.js"></script> 
+	        <script src="js/autocomplete.js"></script>
 	        <script src="js/my.js"></script>
+	        <script src="js/mobiscroll.2.5.0.min.js"></script>
+	        <script src="js/jquery.tagsinput.js"></script>
+	        <script src="js/validate.js"></script>
+	        
 EOT;
 		}
 		public function commonHeader ($title=null) {
 			if (!isset($title)){
-				$title = 'MIS JOBS @ USU';
+				$title = ' USU MIS JOB Board';
 			}
 			echo <<<EOT
 				<div data-theme="b" data-role="header" class="header">
             		<a href="/" data-role="button" data-icon="home" data-theme="d">Home</a>
                 	<h1>
-                    	$title
+                    	<div>$title</div>
                     </h1>
                 </div>
 EOT;

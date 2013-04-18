@@ -8,7 +8,7 @@
     $selected = array('t'=>'','f'=>'');
     $notifyValue = $userAccount['notify'];
     $selected[$notifyValue] = 'selected';
-    print_r($userAccount);
+  //  print_r($userAccount);
    ?>
 <!DOCTYPE html>
 <html>
@@ -18,28 +18,26 @@
       <style>
       </style>
       <script>
-         <?php echo $page->URL;
-         	   echo $linkedIn->getLoginConfig(); 
-         ?>    
+
+         var docURL = window.location; 
          
-         $(document).ready(function() {
+         $(document).on('pagecreate',function() {
          	$("form").change(function(e){
 	         	e.preventDefault();
  
-        var dataString = "data=" + $.encodeJSON($.serializeForm($("form")));
-        
-     
-        $.ajax({
-        type: "POST",
-        url: 'includes/client-ajax/user.php?action=notify',
-        data: dataString,
-        dataType: "json",
-        success: function(data) {
-        
-        }
-     });
-     });
-         });
+	        var dataString = "data=" + $.encodeJSON($.serializeForm($("form")));
+
+	        $.ajax({
+		        type: "POST",
+		        url: 'includes/client-ajax/user.php?action=notify',
+		        data: dataString,
+		        dataType: "json",
+		        success: function(data) {
+			        
+		        }
+		     });
+		   });
+	    });
          
          
          
@@ -69,6 +67,9 @@
          </div>
       </div>
       <?php $page->commonFooter(); ?>
+      </div>
+   </body>
+</html>oter(); ?>
       </div>
    </body>
 </html>

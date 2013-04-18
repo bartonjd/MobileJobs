@@ -1,5 +1,11 @@
 <?php
-include('../includes/client-ajax/autocomplete.php');
+set_include_path ('/home/jbarton/public_html/');
+include('includes/common.inc.php');
+include('includes/client-ajax/autocomplete.php');
+$page = new Page();
+
+ $linkedIn = $page->getLinkedIn();
+
 ?>
 
 <!DOCTYPE html>
@@ -7,7 +13,7 @@ include('../includes/client-ajax/autocomplete.php');
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-        <?php readfile('../includes/common.inc');?>
+            <?php $page->commonIncludes(); ?>
 
         <!-- User-generated css -->
         <style>
@@ -18,31 +24,110 @@ include('../includes/client-ajax/autocomplete.php');
 
         //    $.ready = function(args){$(document).live('pageload',args);};
        	
-	        	$(document).ready(function(){
-	        
-	         	    $('#state').mobiscroll().select({
+	        	$(document).on('pagecreate',function(){
+	        		$('form').validate();
+	        		$('form').on('submit',function(e){
+		        		var valid = $('form').validate();
+		        		if (valid.errorList.length >0){
+		        			e.stopImmediatePropagation();
+		        			e.preventDefault();
+			        		return false;
+		        		}
+		        		var data =$.serializeForm($('form'));
+			        	//set to data get variable, url encode json string
+			        	var dataString = 'data='+ encodeURIComponent($.encodeJSON(data));
+			        	
+			        	//Need to attach tags to opportunity record
+		        		$.ajax({
+					        type: "POST",
+					        url: 'includes/client-ajax/opportunity.php?action=add_opportunity',
+					        data: dataString,
+					        dataType: "json",
+					        success: function(data) {
+						        
+					        }
+					     });
+		        		
+	        		});
+		        	$('#state').autocomplete({
+		        		autoSelectFirst:true,
+			        	serviceUrl: 'includes/client-ajax/autocomplete.php',
+			        	params:{action:'state_list',state:''},
+			        	paramName:'query'
+		        	});
+		        	$('#city').autocomplete({
+		        		autoSelectFirst:true,
+			        	serviceUrl: 'includes/client-ajax/autocomplete.php',
+			        	params:{action:'city_list',state:''},
+			        	onSearchStart:function(params){
+				        	params.state = $('#state').attr('value');
+			        	},
+			        	paramName:'query'
+		        	});
+		        	$('#tags').autocomplete({
+		        		autoSelectFirst:true,
+			        	serviceUrl: 'includes/client-ajax/autocomplete.php',
+			        	params:{action:'tag_list',state:''},
+			        	paramName:'query',
+			        	onSelect:function(suggestion){
+				        	$('#tag-area').addTag($('input[name=tags]').attr('value'));
+				   //     	$('input[name=tags]').attr('value','');
+			        	},
+			        	onNoResult:function(){
+			        		var data ={tag_name: $('input[name=tags]').attr('value')};
+			        		//set to data get variable, url encode json string
+			        		var dataString = 'data='+ encodeURIComponent($.encodeJSON(data));
+			        		$('#tag-area').addTag($('input[name=tags]').attr('value'));
+			        		
+			        		$.ajax({
+						        type: "POST",
+						        url: 'includes/client-ajax/opportunity.php?action=add_tag',
+						        data: dataString,
+						        dataType: "json",
+						        success: function(data) {
+							        
+						        }
+						     });
+
+				        //	$('input[name=tags]').attr('value','');
+				        	// mark ahidden input or something saying save to db
+				        }
+		        	});
+
+
+				    $('#tag-area').tagsInput({
+				    	interactive:false,
+				    	height:60,
+				    	width:700,
+					    onAddTag:function(){
+						    $('input[name=tags]').attr('value','');
+					    }
+				    });
+				    
+				    /*		
+				    $('#state').mobiscroll().select({
 				        theme: 'ios',
 				        display: 'top',
 				        preset:'select',
 				        mode: 'scroller',
 				        inputClass: 'i-txt',
 				        width: 200
-				    })
-$('#show').click(function () {
-        $('#state').mobiscroll('show'); 
-        return false;
-    });
-
-    $('#clearSelect').click(function () {
-        $('#state').val(1).change();
-        $('#state').val('');
-        return false;
-    });
-    
-		        	$('input[type=submit]').click(function(){
+				    });	    
+					$('#show').click(function () {
+					        $('#state').mobiscroll('show'); 
+					        return false;
+					    });
+					
+					    $('#clearSelect').click(function () {
+					        $('#state').val(1).change();
+					        $('#state').val('');
+					        return false;
+					    });
+			       */
+		           $('input[type=submit]').click(function(){
 			        	
 			        	//serialize form and send by ajax 
-		        	});
+		           });
 
 				});
         </script>
@@ -50,70 +135,80 @@ $('#show').click(function () {
     <body>
     
         <!-- Home -->
-        <div data-role="page" id="page1">
+        <div data-role="page" id="page">
+        <h2>Administrate</h2>
+        <form>
             <div data-role="content">
 
                 <div data-role="fieldcontain">
                     <fieldset data-role="controlgroup">
-                        <label for="textinput1">
+                        <label for="opportunity_name">
                             Opportunity Name
                         </label>
-                        <input name="Opportunity Name" id="textinput1" placeholder="name" value="name" type="text" />
+                        <input name="opportunity_name" id="opportunity_name" placeholder="Name of Opportunity" value="" type="text" class="required"/>
                     </fieldset>
                 </div>
                 <div data-role="fieldcontain">
                     <fieldset data-role="controlgroup">
-                        <label for="textarea1">
+                        <label for="opportunity_description">
                             Opportunity Description
                         </label>
-                        <textarea name="Opportunity Description" id="textarea1" placeholder="description">
-                            description
-                        </textarea>
+                        <textarea name="opportunity_description" id="opportunity_description" placeholder="Opportunity Description" class="required"></textarea>
+                    </fieldset>
+                </div>
+                
+                <div data-role="fieldcontain">
+                    <fieldset data-role="controlgroup">
+                        <label for="tags">
+                            Tags
+                        </label>
+                       
+                        <input name="tags" id="tags" placeholder="Add some tags to make this job easier to find" value="" type="text" />
+                        <div name="tag-area" id="tag-area"></div>
                     </fieldset>
                 </div>
                 <div data-role="fieldcontain">
                     <fieldset data-role="controlgroup">
-                        <label for="textinput2">
+                        <label for="state">
+                            State
+                        </label>
+                        <input name="state" id="state" placeholder="State" value=""  class="required" type="text" />
+                    </fieldset>
+                </div>
+                <div data-role="fieldcontain">
+                    <fieldset data-role="controlgroup">
+                        <label for="city">
                             City
                         </label>
-                        <input name="City" id="textinput2" placeholder="city" value="city" type="text" />
+                        <input name="city" id="city" placeholder="City (Search by city name or zip code)" value="" type="text" class="required" />
                     </fieldset>
-                </div>
-                <div data-role="fieldcontain">
-                    <label for="state">
-                        State
-                    </label>
-                    <?php
-    echo getStates("state");
-    ?>
-
                 </div>
                 <div data-role="fieldcontain">
                     <fieldset data-role="controlgroup">
-                        <label for="textinput4">
+                        <label for="organization">
                             Organization
                         </label>
-                        <input name="Organization" id="textinput4" placeholder="org" value="org" type="text" />
+                        <input name="organization" id="organization" placeholder="Organization" value="" class="required" type="text" />
                     </fieldset>
                 </div>
                 <div data-role="fieldcontain">
-                    <label for="selectmenu2">
+                    <legend for="pay_type">
                         Pay Type
-                    </label>
-                    <select name="paytype" data-role="none">
-                        <option value="Paid">
+                    </legend>
+                    <select name="pay_type" >
+                        <option value="paid">
                             Paid
                         </option>
-                        <option value="Unpaid">
+                        <option value="unpaid">
                             Unpaid
                         </option>
                     </select>
                 </div>
                 <div data-role="fieldcontain">
-                    <label for="selectmenu3">
+                    <legend for="schedule_type">
                         Schedule Type
-                    </label>
-                    <select name="scheduletype" data-role="none">
+                    </legend>
+                    <select name="schedule_type" id="schedule_type">
                         <option value="ft">
                             Full-Time
                         </option>
@@ -126,18 +221,22 @@ $('#show').click(function () {
                     </select>
                 </div>
                 <div id="checkboxes1" data-role="fieldcontain">
-                    <fieldset data-role="controlgroup" data-type="vertical">
-                        <legend>
+                    <fieldset data-role="controlgroup" >
+                        <legend >
                             Internship
                         </legend>
-                        <input id="isinternship" name="yes" type="checkbox" />
-                        <label for="isinternship">
+                        </fieldset>
+                    <fieldset data-role="controlgroup" >
+                        <input id="internship" name="internship" type="checkbox" />
+                         <label for="internship">
                             Yes
-                        </label>
+                        </label> 
                     </fieldset>
+                  
                 </div>
-                <input type="submit" data-icon="check" data-iconpos="left" value="Submit" />
+                <input type="submit" data-theme="b" data-icon="check" data-iconpos="left" value="Submit" />
             </div>
         </div>
+        </form>
     </body>
 </html>

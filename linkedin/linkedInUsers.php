@@ -68,7 +68,6 @@ class LinkedInAuthMgr {
 	protected $loggedInState;
 	protected $linkedInResponse;
 	protected $buttonLabel;
-	protected $loginConfig;
 	protected $errorMsg;
     public function __construct($app_key,$app_secret) {
         try {
@@ -220,7 +219,6 @@ class LinkedInAuthMgr {
                         $this->buttonLabel = 'Sign Out';
                         //The actual state
                         $this->loggedInState = 'signedin';
-                        $this->loginConfig = "loginConfig= {state:'signedin'};";
 
                         $response = $OBJ_linkedin -> profile('~:(id,first-name,last-name,email-address,picture-url)');
                         if ($response['success'] === TRUE) {
@@ -238,7 +236,7 @@ class LinkedInAuthMgr {
                         // user isn't connected
                         $this->buttonLabel = 'Sign In';
                         $this->loggedInState = 'signedout';
-                        $this->loginConfig = "loginConfig= {state:'signedout'};";
+
 
                     }
 
@@ -300,8 +298,8 @@ class LinkedInAuthMgr {
     public function getButtonLabel(){
 	    return $this->buttonLabel;
     }
-    public function getLoginConfig(){
-	    return $this->loginConfig;
+    public function getLoginState(){
+	    return $this->loggedInState;
     }
     private function oauth_session_exists() {
         /**
@@ -325,7 +323,6 @@ class LinkedInAuthMgr {
 	    $data = $this->getProfileData();
         $jtb = new JSONTableBridge('users', 'email_address', array('last_modified'=>'{datetime}','email_address'=>"[".$data['email-address']."]"), $db);
         $jtb->UPDATE(json_encode($input));
-        die($jtb->getSQL());
  
     }
 }

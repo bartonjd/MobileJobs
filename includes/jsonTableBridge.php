@@ -48,12 +48,19 @@
     	}
 		
     	private function sanitize($val){
-    		if (gettype($val)=="boolean"){
-    			$val = ($val) ? 1 : 0; 
-    		}else{
-    			$val = trim(strip_tags($val));
-    		}
-    		return $val;
+            try{
+        		if (gettype($val)=="boolean"){
+        			$val = ($val) ? 1 : 0; 
+        		} elseif (gettype($val)=="object") {
+            	    $data = get_object_vars($val);
+                    $val =  trim(strip_tags($data[0]));
+        		} else{
+        			$val = trim(strip_tags($val));
+        		}
+        		return $val;
+            } catch (Exception $e)  {  
+                  throw new Exception( 'Failed to sanitize '.var_dump($val), $e);  
+            }  
     	}
     	
     	public function UPDATE($json=""){

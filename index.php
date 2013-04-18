@@ -12,39 +12,22 @@ $page = new Page();
         <?php $page->commonIncludes(); ?>
         <script>
         /*$.mobile.ignoreContentEnabled=true;*/
-           	<?php echo $page->URL;?>
-        	<?php echo $linkedIn->getLoginConfig(); ?>        	
-        	$(document).ready(function(){
-
-        		switch (loginConfig.state){
-	        		case 'signedin':
-	        			//User is signed in
-	        			loginConfig.action = 'revoke';
-
-	        		break;
-	        		case 'signedout':
-	        			//User is not currently signed in
-	        			loginConfig.action = 'initiate';
-	        		break;
-        		}
+           	var docURL = window.location;	
+        	$(document).on('pagecreate',function(){
 	        	$('#account__login').live('click',function(){
-	        		switch (loginConfig.action){
-		        		case 'revoke':
+	        		var action = $('#account__login').attr('action');
+	        		if (action == 'signedin'){
 		        			$.ajax({
 						        type: "POST",
 						        url: 'includes/client-ajax/user.php?lType=revoke',
 						        dataType: "json",
-						        success: function(data) {
-							        loginConfig.state = 'signedout';
-							        loginConfig.action = 'initiate';
+						        success: function(data) {	
 							        window.location = docURL;
 						        }
 						     });
 
-		        		break;
-		        		case 'initiate':
+		        	} else {
 		        			window.location = docURL+'?lType=initiate';
-		        		break;
 	        		}
 		        	
 		        });
@@ -69,7 +52,7 @@ $page = new Page();
             	<img style="width: 288px; height: 100px" src="http://huntsman.usu.edu/mis/images/uploads/site/topbars/MIS1.jpg" />
             </div>
                 
-            <div data-role="fieldcontain" class="body">
+            <div data-role="fieldcontain" class="body-content">
 	        	<h2>
 	            	Opportunities
 	            </h2>
@@ -88,7 +71,7 @@ $page = new Page();
                     </li>
                     <li action="user" data-theme="c">
                     
-                       <a href="#" id="account__login" data-transition="slide">
+                       <a href="#" id="account__login" action="<?php echo $linkedIn->getLoginState();?>" data-transition="slide">
                             <?php echo $linkedIn->getButtonLabel();?>
                         </a>
                     </li>
@@ -111,6 +94,22 @@ $page = new Page();
                             Search
                         </a>
                     </li>
+                    <li action="view" data-theme="c">
+                        <a href="#page1" data-transition="slide">
+                            View Saved
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <?php $page->commonFooter(); ?>
+            </div>
+    </body>
+    </body>
+</html>
+<?php
+echo $loginConfig; 
+ob_end_flush();
+?>        </li>
                     <li action="view" data-theme="c">
                         <a href="#page1" data-transition="slide">
                             View Saved
