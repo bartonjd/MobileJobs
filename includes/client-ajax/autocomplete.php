@@ -51,6 +51,7 @@ function getStates($name){
 	$result = pg_fetch_all($query);
 	$html = <<<EOT
 	<select name="$name" data-role="none" id="${name}" class="states">
+		<option value=""></option>
 EOT;
 	foreach ($result as $value){
 $html .= <<<EOT

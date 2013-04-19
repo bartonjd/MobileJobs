@@ -26,3 +26,24 @@ label.error {
 .autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; font-family: sans-serif;}
 .autocomplete-selected { background: #F0F0F0; font-family: sans-serif; color: #98a7b3;}
 .autocomplete-suggestions strong { font-weight: normal; color:#444; font-family: sans-serif;}
+
+.ui-dialog-contain {
+  width: 92.5%;
+  max-width: 500px;
+  margin: 10% auto 15px auto;
+  padding: 0;
+  position: relative;
+  top: -15px;
+}
+
+
+
+
+
+
+
+
+
+
+
+

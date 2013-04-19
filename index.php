@@ -14,7 +14,7 @@ $page = new Page();
         /*$.mobile.ignoreContentEnabled=true;*/
            	var docURL = window.location;	
         	$(document).on('pagecreate',function(){
-	        	$('#account__login').live('click',function(){
+	        	$('#account__login').on('click',function(){
 	        		var action = $('#account__login').attr('action');
 	        		if (action == 'signedin'){
 		        			$.ajax({
@@ -94,22 +94,6 @@ $page = new Page();
                             Search
                         </a>
                     </li>
-                    <li action="view" data-theme="c">
-                        <a href="#page1" data-transition="slide">
-                            View Saved
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <?php $page->commonFooter(); ?>
-            </div>
-    </body>
-    </body>
-</html>
-<?php
-echo $loginConfig; 
-ob_end_flush();
-?>        </li>
                     <li action="view" data-theme="c">
                         <a href="#page1" data-transition="slide">
                             View Saved

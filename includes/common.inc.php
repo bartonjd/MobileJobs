@@ -2,7 +2,7 @@
 	require_once('linkedin/linkedInUsers.php');
     class Page {
     	public $URL;
-    	private $docURL;
+    	public $docURL;
     	private $linkedIn;
     	
     	public function __construct (){
@@ -21,17 +21,19 @@
 	        <meta name="apple-mobile-web-app-capable" content="yes" />
 	        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 	        <title></title>
-	        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.css" />
+	        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
 	        <link rel="stylesheet" href="css/mobiscroll.2.5.0.min.css" />
 	        <link rel="stylesheet" href="css/jquery.tagsinput.css" />
-	        
 	        <link rel="stylesheet" href="css/my.css" />
-	        <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
-            <script src="http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.js"></script> 
+	        <link rel="stylesheet" href="css/jquery.mobile.pagination.css" />
+	        
+	        <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+	        <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
 	        <script src="js/autocomplete.js"></script>
 	        <script src="js/my.js"></script>
 	        <script src="js/mobiscroll.2.5.0.min.js"></script>
 	        <script src="js/jquery.tagsinput.js"></script>
+	        <script src="js/jquery.mobile.pagination.js"></script>    
 	        <script src="js/validate.js"></script>
 	        
 EOT;
@@ -65,5 +67,10 @@ EOT;
 			}
 		}
 	}    
-
+	function formatData ($data){
+		return urlencode(json_encode($data));
+	}
+	function getData($str) {
+		return json_decode(urldecode($str));
+	}
 ?>

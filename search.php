@@ -39,6 +39,9 @@ $linkedIn = $page->getLinkedIn();
 					        mode: 'scroller',
 					        width: 200
 					});
+					$('#tags').tagsInput({
+						
+					});
 					window.ranOnce = 1;
 				}
             });   
@@ -56,16 +59,36 @@ $linkedIn = $page->getLinkedIn();
 		        		var data =$.serializeForm($('form'));
 			        	//set to data get variable, url encode json string
 			        	var dataString = 'data='+ encodeURIComponent($.encodeJSON(data));
-			        
-		        		$.ajax({
+			        	$.ajax({
 					        type: "POST",
 					        url: 'includes/client-ajax/opportunity.php?action=search_jobs',
 					        data: dataString,
 					        dataType: "json",
-					        success: function(data) {
-						        
+					        success: function(data,status) {
+					        	if (data.success == true){
+						        	$.mobile.navigate('searchResults.php?options=' + encodeURIComponent($.encodeJSON(data.options))+'&search='+$.encodeJSON(data.search));
+						        } else {
+							        if (data.errors != '' && data.errors != undefined) {
+								        $('body').append(
+								            '<div id="error_msg" data-close-btn="right" data-overlay-theme="a"  data-corners="true" data-role="dialog">'+
+							                	'<div data-role="header" ><div style="font-size:22px;padding:5px;color:#DDD;">Notice</div></div>'+
+							                	'<div data-role="content" class="err_cnt">'+data.errors+'</div>'+
+							                	'<div data-role="footer" >&nbsp;</div>'+
+							                '</div>');
+								        $('#err_msg').append($('.err_cnt'));
+								        
+								        $.mobile.changePage('#error_msg', { transition: "pop", role: "dialog" } );
+							        }
+						        }
 					        }
 					     });
+
+		        						
+		        }).keydown(function(event){
+					    if(event.keyCode == 13) {
+					      event.preventDefault();
+					      return false;
+					    }
 				});
 				
             });
@@ -78,9 +101,24 @@ $linkedIn = $page->getLinkedIn();
                  <?php $page->commonHeader(); ?>
 				<h2>Search Job & Internship Opportunities</h2>
             </div>
-            <form>
+            <form >
             <div data-role="content">
-           
+                <div data-role="fieldcontain">
+                    <fieldset role="controlgroup">
+                        <label for="tags">
+                            Tags
+                        </label>
+                        <input type="text" name="tags" id="tags" value="" placeholder="Tags">
+                    </fieldset>
+                </div>
+                <div data-role="fieldcontain">
+                    <fieldset role="controlgroup">
+                        <label for="city">
+                            Organization
+                        </label>
+                        <input type="text" name="organization" id="organization" value="" placeholder="Organization">
+                    </fieldset>
+                </div>       
                 <div data-role="fieldcontain">
                     <fieldset role="controlgroup">
                         <label for="city">
@@ -117,19 +155,17 @@ $linkedIn = $page->getLinkedIn();
                     </select>
                     </fieldset>
                 </div>
-                <div id="checkboxes1" data-role="fieldcontain">
-                    <fieldset data-role="controlgroup" data-type="vertical">
-                        <legend>
-                            Internship
-                        </legend>
-                    </fieldset>
-                    <fieldset data-role="controlgroup" data-type="vertical">
-                        <label for="internship">
-                        <input id="checkbox1" name="internship" type="checkbox" />Yes</label>
-                    </fieldset>
-                </div>
-                <input type="button" data-icon="check" data-iconpos="left" value="Submit" />
+
+               <div data-role="fieldcontain">
+                  <label for="internship">Internship</label>
+                  <select name="internship" id="internship" data-role="slider" data-theme="d">
+                     <option value="f">Off</option>
+                     <option value="t" >On</option>
+                  </select>
+               </div>
+                <input type="button" data-icon="check" data-iconpos="left" value="Search" />
             </div>
+            
             </form>
         
            <?php $page->commonFooter(); ?>

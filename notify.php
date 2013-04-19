@@ -69,7 +69,4 @@
       <?php $page->commonFooter(); ?>
       </div>
    </body>
-</html>oter(); ?>
-      </div>
-   </body>
 </html>

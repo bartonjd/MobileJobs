@@ -2,6 +2,7 @@
 $.serializeForm = function($o) {
     var o = {},
         real_value = function($field) {
+ 
             var val = $field.val() || "";
 
             // additional cleaning here, if needed

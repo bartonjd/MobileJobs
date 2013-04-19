@@ -24,7 +24,7 @@ $page = new Page();
 
         //    $.ready = function(args){$(document).live('pageload',args);};
        	
-	        	$(document).on('pagecreate',function(){
+	        	$(document).on('pageinit',function(){
 	        		$('form').validate();
 	        		$('form').on('submit',function(e){
 		        		var valid = $('form').validate();
@@ -48,7 +48,12 @@ $page = new Page();
 					        }
 					     });
 		        		
-	        		});
+	        		}).keydown(function(event){
+					    if(event.keyCode == 13) {
+					      event.preventDefault();
+					      return false;
+					    }
+					  });
 		        	$('#state').autocomplete({
 		        		autoSelectFirst:true,
 			        	serviceUrl: 'includes/client-ajax/autocomplete.php',
@@ -64,20 +69,21 @@ $page = new Page();
 			        	},
 			        	paramName:'query'
 		        	});
-		        	$('#tags').autocomplete({
+		        	$('#tag').autocomplete({
 		        		autoSelectFirst:true,
 			        	serviceUrl: 'includes/client-ajax/autocomplete.php',
 			        	params:{action:'tag_list',state:''},
 			        	paramName:'query',
 			        	onSelect:function(suggestion){
-				        	$('#tag-area').addTag($('input[name=tags]').attr('value'));
-				   //     	$('input[name=tags]').attr('value','');
+				        	$('#tag-area').addTag($('input[name=tag]').attr('value'));
+
 			        	},
 			        	onNoResult:function(){
-			        		var data ={tag_name: $('input[name=tags]').attr('value')};
+			        		var data ={tag_name: $('input[name=tag]').attr('value')};
 			        		//set to data get variable, url encode json string
 			        		var dataString = 'data='+ encodeURIComponent($.encodeJSON(data));
-			        		$('#tag-area').addTag($('input[name=tags]').attr('value'));
+			        		
+			        		$('#tag-area').addTag($('input[name=tag]').attr('value'));
 			        		
 			        		$.ajax({
 						        type: "POST",
@@ -88,47 +94,29 @@ $page = new Page();
 							        
 						        }
 						     });
-
-				        //	$('input[name=tags]').attr('value','');
-				        	// mark ahidden input or something saying save to db
 				        }
 		        	});
-
 
 				    $('#tag-area').tagsInput({
 				    	interactive:false,
 				    	height:60,
+				    	delimiter:' ',
 				    	width:700,
-					    onAddTag:function(){
-						    $('input[name=tags]').attr('value','');
+				    	onRemoveTag:function(tag){
+					    	var val = $('#tags').val().replace(/^[ ,]{2}/,'');
+					    	var tagArray = val.split(',');
+					    	delete tagArray[val.split(',').indexOf(tag)];
+					    	$('#tags').val(tagArray.join(','));
+				    	},
+					    onAddTag:function(tagname){
+					    	//Append the new tag to our hidden field for later submission to server
+					    	var prevVal = $('#tags').val()+',' || '';
+					    	$('#tags').val(prevVal + tagname);
+						    $('input[name=tag]').attr('value','');
+						    
 					    }
 				    });
 				    
-				    /*		
-				    $('#state').mobiscroll().select({
-				        theme: 'ios',
-				        display: 'top',
-				        preset:'select',
-				        mode: 'scroller',
-				        inputClass: 'i-txt',
-				        width: 200
-				    });	    
-					$('#show').click(function () {
-					        $('#state').mobiscroll('show'); 
-					        return false;
-					    });
-					
-					    $('#clearSelect').click(function () {
-					        $('#state').val(1).change();
-					        $('#state').val('');
-					        return false;
-					    });
-			       */
-		           $('input[type=submit]').click(function(){
-			        	
-			        	//serialize form and send by ajax 
-		           });
-
 				});
         </script>
     </head>
@@ -163,7 +151,8 @@ $page = new Page();
                             Tags
                         </label>
                        
-                        <input name="tags" id="tags" placeholder="Add some tags to make this job easier to find" value="" type="text" />
+                        <input name="tag" id="tag" placeholder="Add some tags to make this job easier to find" value="" type="text" />
+                        <input type="hidden" name="tags" id="tags" value=" ">
                         <div name="tag-area" id="tag-area"></div>
                     </fieldset>
                 </div>
@@ -220,21 +209,14 @@ $page = new Page();
                         </option>
                     </select>
                 </div>
-                <div id="checkboxes1" data-role="fieldcontain">
-                    <fieldset data-role="controlgroup" >
-                        <legend >
-                            Internship
-                        </legend>
-                        </fieldset>
-                    <fieldset data-role="controlgroup" >
-                        <input id="internship" name="internship" type="checkbox" />
-                         <label for="internship">
-                            Yes
-                        </label> 
-                    </fieldset>
-                  
-                </div>
-                <input type="submit" data-theme="b" data-icon="check" data-iconpos="left" value="Submit" />
+               <div data-role="fieldcontain">
+                  <label for="internship">Internship</label>
+                  <select name="internship" id="internship" data-role="slider" data-theme="d">
+                     <option value="f">Off</option>
+                     <option value="t" >On</option>
+                  </select>
+               </div>
+                <input type="submit" data-theme="b" data-icon="check" data-iconpos="left" value="Add Opportunity" />
             </div>
         </div>
         </form>
