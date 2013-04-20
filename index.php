@@ -11,6 +11,12 @@ $page = new Page();
         <meta charset="utf-8" />
         <?php $page->commonIncludes(); ?>
         <script>
+            $(document).on("mobileinit", function() {
+              $.support.touchOverflow = true;
+              $.mobile.touchOverflowEnabled = true;
+            });
+
+
         /*$.mobile.ignoreContentEnabled=true;*/
            	var docURL = window.location;	
         	$(document).on('pagecreate',function(){
@@ -32,26 +38,106 @@ $page = new Page();
 		        	
 		        });
 	        });
-        </script>
-        <script>
-            try {
 
-    $(function() {
+                  
+         $(document).delegate('#search-page','pagecreate',function() {
+	     	var docURL = window.location; 
+    	           $('#state').mobiscroll().select({
+	    			        theme: 'ios',
+					        display: 'top',
+					        preset:'select',
+					        mode: 'scroller',
+					        width: 200
+					});
+					$('#schedule_type').mobiscroll().select({
+	    			        theme: 'ios',
+					        display: 'top',
+					        preset:'select',
+					        mode: 'scroller',
+					        width: 200
+					});
+					$('#pay_type').mobiscroll().select({
+	    			        theme: 'ios',
+					        display: 'top',
+					        preset:'select',
+					        mode: 'scroller',
+					        width: 200
+					});
+					$('#tags').tagsInput({
+						
+					});
 
-    });
+				var valid = $('form').validate();
+				$('form input[type=button]').on('click',function(e){
 
-  } catch (error) {
-    console.error("Your javascript has an error: " + error);
-  }
+					 var valid = $('form').validate();
+		        		if (valid.errorList.length >0){
+
+			        		return false;
+		        		}
+		        		var data =$.serializeForm($('form'));
+			        	//set to data get variable, url encode json string
+			        	var dataString = 'data='+ encodeURIComponent($.encodeJSON(data));
+			        	$.ajax({
+					        type: "POST",
+					        url: 'includes/client-ajax/opportunity.php?action=search_jobs',
+					        data: dataString,
+					        dataType: "json",
+					        success: function(data,status) {
+					        	if (data.success == true){
+						       // 	$.mobile.loadPage('searchResults.php?options=' + encodeURIComponent($.encodeJSON(data.options))+'&search='+encodeURIComponent($.encodeJSON(data.search)),{pageContainer:$('#search-results-page'),changeHash:true});
+						        	$('#search-results-page').load('searchResults.php?options=' + encodeURIComponent($.encodeJSON(data.options))+'&search='+encodeURIComponent($.encodeJSON(data.search)), function () {
+									    $(this).trigger('create');
+									    $.mobile.changePage('#search-results-page');
+									});
+						        } else {
+							        if (data.errors != '' && data.errors != undefined) {
+								        $('body').append(
+								            '<div id="error_msg" data-close-btn="right" data-overlay-theme="a"  data-corners="true" data-role="dialog">'+
+							                	'<div data-role="header" ><div style="font-size:22px;padding:5px;color:#DDD;">Notice</div></div>'+
+							                	'<div data-role="content" class="err_cnt">'+data.errors+'</div>'+
+							                	'<div data-role="footer" >&nbsp;</div>'+
+							                '</div>');
+								        $('#err_msg').append($('.err_cnt'));
+								        
+								        $.mobile.changePage('#error_msg', { transition: "pop", role: "dialog" } );
+							        }
+						        }
+					        }
+					     });
+
+		        						
+		        }).keydown(function(event){
+					    if(event.keyCode == 13) {
+					      event.preventDefault();
+					      return false;
+					    }
+				});
+
+            });
+            $(document).delegate('#search-results-page','pageshow',function(){
+	           var docURL = window.location;	
+	        	$('tr.sres').bind('tap click',function(){
+		        	var id = $(this).attr('id');
+		        	//consider saving options to url or adding a back button
+		        	$('#job-detail-page').load('result.php?opp='+id,function(){
+			        	$(this).trigger('create');
+						$.mobile.changePage('#search-results-page');
+		        	});
+
+	        	});
+
+            });
         </script>
     </head>
     <body>
-        <div  data-role="page" data-theme="c">
-	        <?php $page->commonHeader(); ?>
-			<div>
-            	<img style="width: 288px; height: 100px" src="http://huntsman.usu.edu/mis/images/uploads/site/topbars/MIS1.jpg" />
-            </div>
-                
+        <div  data-role="page" data-theme="c" data-add-back-btn="true">
+        	<div data-theme="c" data-role="header" class="header">
+		        <?php $page->commonHeader(); ?>
+				<div>
+	            	<img style="width: 288px; height: 100px" src="http://huntsman.usu.edu/mis/images/uploads/site/topbars/MIS1.jpg" />
+	            </div>
+            </div>   
             <div data-role="fieldcontain" class="body-content">
 	        	<h2>
 	            	Opportunities
@@ -79,7 +165,7 @@ $page = new Page();
                     if ($linkedIn->isLoggedIn()){
                     ?>
                     <li action="notify" data-theme="c">
-                        <a href="notify.php" data-transition="slide">
+                        <a href="#notify-page" data-transition="slide">
                             Notifications
                         </a>
                     </li>
@@ -90,12 +176,12 @@ $page = new Page();
                         Opportunities
                     </li>
                     <li action="search" data-theme="c">
-                        <a href="search.php" data-transition="slide">
+                        <a href="#search-page" data-transition="slide">
                             Search
                         </a>
                     </li>
                     <li action="view" data-theme="c">
-                        <a href="#page1" data-transition="slide">
+                        <a href="#saved-jobs-page" data-transition="slide">
                             View Saved
                         </a>
                     </li>
@@ -103,7 +189,42 @@ $page = new Page();
             </div>
             <?php $page->commonFooter(); ?>
             </div>
-    </body>
+            
+            <!-- Search Page -->
+            <div data-role="page" id="search-page" data-add-back-btn="true" data-theme="c">
+                <?php include('search.php');?>
+            </div>
+            <!-- End Search Page -->
+            
+            <!-- Search Results Page -->
+            <div data-role="page" id="search-results-page" data-add-back-btn="true" data-theme="c">
+
+            </div>           
+            <!-- End Search Results Page -->
+            
+            <!-- Job Detail  Page -->
+            <div data-role="page" id="job-detail-page" data-add-back-btn="true" data-theme="c">
+                <?php 
+               //     include('result.php');
+                ?>
+            </div>           
+            <!-- End Job Detail Page -->
+            
+            <!-- Notification Settings Page -->
+            <div data-role="page" id="notify-page" data-add-back-btn="true" data-theme="c">
+                <?php 
+                    include('notify.php');
+                ?>
+            </div>           
+            <!-- End Notification Settings Page -->
+            
+            <!-- Saved Jobs Page -->
+            <div data-role="page" id="saved-jobs-page" data-add-back-btn="true" data-theme="c">
+                <?php 
+                    //include('savedresult.php');
+                ?>
+            </div>           
+            <!-- End Saved Jobs Page -->
     </body>
 </html>
 <?php

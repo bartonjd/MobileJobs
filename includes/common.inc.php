@@ -18,8 +18,12 @@
     	public function commonIncludes(){
         	echo <<<EOT
 	        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-	        <meta name="apple-mobile-web-app-capable" content="yes" />
-	        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	        <link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+	        <link rel="apple-touch-icon" sizes="114x114" href="images/iPhoneIcon_Big.png" />
+			<link rel="apple-touch-icon" sizes="72x72" href="images/iPhoneIcon_Medium.png" />
+			<link rel="apple-touch-icon" href="images/iPhoneIcon_Small.png" />
+			<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+			<meta name="apple-mobile-web-app-capable" content="yes">
 	        <title></title>
 	        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
 	        <link rel="stylesheet" href="css/mobiscroll.2.5.0.min.css" />
@@ -44,7 +48,7 @@ EOT;
 			}
 			echo <<<EOT
 				<div data-theme="b" data-role="header" class="header">
-            		<a href="/" data-role="button" data-icon="home" data-theme="d">Home</a>
+            		<a href="/" data-role="button" data-icon="home" data-inline="true" data-mini="true" class="ui-btn-right" data-theme="b">Home</a>
                 	<h1>
                     	<div>$title</div>
                     </h1>

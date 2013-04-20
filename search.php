@@ -1,102 +1,9 @@
 <?php
 set_include_path ('/home/jbarton/public_html/');
-include('includes/common.inc.php');
 include('includes/client-ajax/autocomplete.php');
-$page = new Page();
-$linkedIn = $page->getLinkedIn();
+
 ?>
 
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-        <?php $page->commonIncludes(); ?>
-        <script>
-               var docURL = window.location;	
-            $(document).on('pageinit',function(){
-               if(window.ranOnce != 1){
-		           $('#state').mobiscroll().select({
-	    			        theme: 'ios',
-					        display: 'top',
-					        preset:'select',
-					        mode: 'scroller',
-					        width: 200
-					});
-					$('#schedule_type').mobiscroll().select({
-	    			        theme: 'ios',
-					        display: 'top',
-					        preset:'select',
-					        mode: 'scroller',
-					        width: 200
-					});
-					$('#pay_type').mobiscroll().select({
-	    			        theme: 'ios',
-					        display: 'top',
-					        preset:'select',
-					        mode: 'scroller',
-					        width: 200
-					});
-					$('#tags').tagsInput({
-						
-					});
-					window.ranOnce = 1;
-				}
-            });   
-               
-        	$(document).on('pageinit',function(){
-
-				var valid = $('form').validate();
-				$('form input[type=button]').on('click',function(e){
-
-					 var valid = $('form').validate();
-		        		if (valid.errorList.length >0){
-
-			        		return false;
-		        		}
-		        		var data =$.serializeForm($('form'));
-			        	//set to data get variable, url encode json string
-			        	var dataString = 'data='+ encodeURIComponent($.encodeJSON(data));
-			        	$.ajax({
-					        type: "POST",
-					        url: 'includes/client-ajax/opportunity.php?action=search_jobs',
-					        data: dataString,
-					        dataType: "json",
-					        success: function(data,status) {
-					        	if (data.success == true){
-						        	$.mobile.navigate('searchResults.php?options=' + encodeURIComponent($.encodeJSON(data.options))+'&search='+$.encodeJSON(data.search));
-						        } else {
-							        if (data.errors != '' && data.errors != undefined) {
-								        $('body').append(
-								            '<div id="error_msg" data-close-btn="right" data-overlay-theme="a"  data-corners="true" data-role="dialog">'+
-							                	'<div data-role="header" ><div style="font-size:22px;padding:5px;color:#DDD;">Notice</div></div>'+
-							                	'<div data-role="content" class="err_cnt">'+data.errors+'</div>'+
-							                	'<div data-role="footer" >&nbsp;</div>'+
-							                '</div>');
-								        $('#err_msg').append($('.err_cnt'));
-								        
-								        $.mobile.changePage('#error_msg', { transition: "pop", role: "dialog" } );
-							        }
-						        }
-					        }
-					     });
-
-		        						
-		        }).keydown(function(event){
-					    if(event.keyCode == 13) {
-					      event.preventDefault();
-					      return false;
-					    }
-				});
-				
-            });
-        </script>
-    </head>
-    <body>
-        <!-- Home -->
-        <div data-role="page" id="page">
             <div data-theme="c" data-role="header" class="header">
                  <?php $page->commonHeader(); ?>
 				<h2>Search Job & Internship Opportunities</h2>
@@ -169,6 +76,3 @@ $linkedIn = $page->getLinkedIn();
             </form>
         
            <?php $page->commonFooter(); ?>
-        </div>
-    </body>
-</html>

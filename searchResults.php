@@ -3,7 +3,6 @@ set_include_path ('/home/jbarton/public_html/');
 include('includes/common.inc.php');
 $page = new Page();
 $linkedIn = $page->getLinkedIn();
-
 $options = getData($_REQUEST['options']);
 $nextOptions = getData($_REQUEST['options']);
 if (isset($_REQUEST['search'])){
@@ -75,32 +74,8 @@ $url_next = $page->docURL .'?options='.($nextOptions).'&searchTerms='.formatData
 
 $resultHtml =  listJobs($searchTerms);
 ?>
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-        <?php $page->commonIncludes(); ?>
-        <script>
-           var docURL = window.location;	
-               
-        	$(document).on('pageinit',function(){
-	        	$('tr.sres').on('click',function(){
-		        	var id = $(this).attr('id');
-		        	//consider saving options to url or adding a back button
-		        	$.mobile.navigate('result.php?opp='+id);
-	        	});
-				
-            });
-        </script>
-    </head>
-    <body>
-        <!-- Home -->
-
-       <ul data-role="pagination">
-		<?php
+        	<ul data-role="pagination">
+	        	<?php
 			        		if (!$noPrev){
 				        		echo <<<EOT
 				        		<li class="ui-pagination-prev"><a href="$url_prev">Prev</a></li>
@@ -112,23 +87,17 @@ EOT;
 EOT;
 							}
 						?>
-					</ul>    
-
-      <div data-role="page" data-theme="c">
-      	 <div data-theme="c" data-role="header" class="header">
-         <?php $page->commonHeader(); ?>
-         <h2>Search Results</h2>
-      	 </div>
+			</ul>    
+			<div data-theme="c" data-role="header" class="header">
+         		<?php $page->commonHeader(); ?>
+	         	<h2>Search Results</h2>
+	      	 </div>
         <form>
-      <div data-role="content">
+        <div data-role="content">
 
-					<div data-role="fieldcontain" style="margin:5px 25px 30px 25px;">
-						<?php echo $resultHtml; ?>
-					</div>
+			<div data-role="fieldcontain" style="margin:5px 25px 30px 25px;">
+				<?php echo $resultHtml; ?>
 			</div>
+		</div>
         </form>
-           <?php $page->commonFooter(); ?>
-        </div>
-        
-    </body>
-</html>
+        <?php $page->commonFooter(); ?>

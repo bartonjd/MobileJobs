@@ -1,53 +1,15 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-        <title>
-        </title>
-        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
-        <link rel="stylesheet" href="my.css" />
-        <script src="http://code.jquery.com/jquery-1.7.2.min.js">
-        </script>
-        <script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js">
-        </script>
-        <script src="my.js">
-        </script>
-        <!-- User-generated css -->
-        <style>
-        </style>
-        <!-- User-generated js -->
-        <script>
-            try {
-
-    $(function() {
-
-    });
-
-  } catch (error) {
-    console.error("Your javascript has an error: " + error);
-  }
-        </script>
-    </head>
-    <body>
-        <!-- Home -->
-        <div data-role="page" id="page1">
+<?php
+set_include_path ('/home/jbarton/public_html/');
+include('includes/common.inc.php');
+$page = new Page();
+$linkedIn = $page->getLinkedIn();
+?>
             <div data-theme="c" data-role="header" class="header">
-                <h1>
-                    Utah State University
-                </h1>
-				<div>
-                        <img style="width: 288px; height: 100px" src="http://huntsman.usu.edu/mis/images/uploads/site/topbars/MIS1.jpg" />
-                </div>
+                 <?php $page->commonHeader(); ?>
 				<h2>
-                    Opportunities
+                    Job Details
                 </h2>
-				            
-                    
-                
-                
+ 
             </div>
             <div data-role="content">
                 <div data-role="fieldcontain">
@@ -125,11 +87,5 @@
                         </label>
                     </fieldset>
             </div>
-            <div data-theme="c" data-role="footer" data-position="fixed" class="footer">
-                <h3>
-                    <img style="width: 288px; height: 100px" src="logo.png" />
-                </h3>
-            </div>
-        </div>
-    </body>
-</html>
+        
+           <?php $page->commonFooter(); ?>
