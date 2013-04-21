@@ -289,11 +289,15 @@ class LinkedInAuthMgr {
         }
     }
     private function convertXML2Array($xml) {
-        $obj = array();
-        foreach($xml as $prop => $val) {
-            $obj[$prop] = $val;
+    	if ($xml != "") {
+	        $obj = array();
+	        foreach($xml as $prop => $val) {
+	            $obj[$prop] = $val;
+	        }
+	        return $obj;
+        } else {
+	        return array();
         }
-        return $obj;
     }
     public function getButtonLabel(){
 	    return $this->buttonLabel;

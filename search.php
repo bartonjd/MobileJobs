@@ -8,7 +8,7 @@ include('includes/client-ajax/autocomplete.php');
                  <?php $page->commonHeader(); ?>
 				<h2>Search Job & Internship Opportunities</h2>
             </div>
-            <form >
+            <form name="search-form" id="search-form">
             <div data-role="content">
                 <div data-role="fieldcontain">
                     <fieldset role="controlgroup">
@@ -66,8 +66,9 @@ include('includes/client-ajax/autocomplete.php');
                <div data-role="fieldcontain">
                   <label for="internship">Internship</label>
                   <select name="internship" id="internship" data-role="slider" data-theme="d">
-                     <option value="f">Off</option>
-                     <option value="t" >On</option>
+                  	 <option value=""></option>
+                     <option value="f">No</option>
+                     <option value="t" >Yes</option>
                   </select>
                </div>
                 <input type="button" data-icon="check" data-iconpos="left" value="Search" />

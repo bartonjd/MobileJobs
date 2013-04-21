@@ -3,6 +3,7 @@
 
     function execBoundSQL ($db, $sql, $params,$errmsg) {
 	    $errmsg = '';
+	    error_log($sql);
     	$stmt = pg_query_params($db, $sql, $params);
     	if ($stmt == false){
 	    	$errmsg = 'There was a problem running the query.';

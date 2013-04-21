@@ -1,24 +1,25 @@
 <?php
 set_include_path ('/home/jbarton/public_html/');
-include('includes/common.inc.php');
+include_once('includes/common.inc.php');
 $page = new Page();
 $linkedIn = $page->getLinkedIn();
+$data = fetchData('includes/client-ajax/opportunity.php?action=job_details&opp_id='.$_REQUEST['opp_id']);
+$data = $data[0];
 ?>
+		<?php $page->commonHeader(); ?>
             <div data-theme="c" data-role="header" class="header">
-                 <?php $page->commonHeader(); ?>
+                 
 				<h2>
                     Job Details
                 </h2>
  
             </div>
             <div data-role="content">
-                <div data-role="fieldcontain">
+                  <div data-role="fieldcontain">
                     <fieldset data-role="controlgroup">
+
                         <label>
-                            Opportunity Name:
-                        </label>
-                        <label>
-							placeholder for name
+							<?php echo $data->opportunity_name;;?>
 						</label>
                     </fieldset>
                 </div>
@@ -28,7 +29,7 @@ $linkedIn = $page->getLinkedIn();
                             Opportunity Description:
                         </label>
                         <label>
-							placeholder for description
+                            <?php echo $data->opportunity_description;?>
 						</label>
                     </fieldset>
                 </div>
@@ -38,7 +39,7 @@ $linkedIn = $page->getLinkedIn();
                             City:
                         </label>
                         <label>
-							placeholder for city
+                            <?php echo $data->city;?>
 						</label>
                     </fieldset>
                 </div>
@@ -47,7 +48,7 @@ $linkedIn = $page->getLinkedIn();
                             State:
                         </label>
                         <label>
-							placeholder for state
+                            <?php echo $data->state;?>
 						</label>
                 </div>
                 <div data-role="fieldcontain">
@@ -56,7 +57,7 @@ $linkedIn = $page->getLinkedIn();
                             Organization/Company:
                         </label>
                         <label>
-							placeholder for organization/company
+                            <?php echo $data->organization;?>
 						</label>
                     </fieldset>
                 </div>
@@ -65,7 +66,7 @@ $linkedIn = $page->getLinkedIn();
                             Pay Type:
                         </label>
                         <label>
-							placeholder for pay type
+                            <?php echo $data->pay_type;?>
 						</label>
                 </div>
                 <div data-role="fieldcontain">
@@ -73,19 +74,20 @@ $linkedIn = $page->getLinkedIn();
                             Schedule Type:
                         </label>
                         <label>
-							placeholder for schedule type
+                            <?php echo $data->schedule_type;?>
 						</label>
                 </div>
                 <div id="checkboxes1" data-role="fieldcontain">
                     <fieldset data-role="controlgroup" data-type="vertical">
-                        <legend>
+                        <label>
                             Internship
-                        </legend>
-                        <input id="checkbox1" name="Yes" type="checkbox" />
+                        </label>
+
                         <label for="checkbox1">
-                            Yes
+	                        <?php echo $data->internship;?>    
                         </label>
                     </fieldset>
             </div>
+	        </div>
         
            <?php $page->commonFooter(); ?>

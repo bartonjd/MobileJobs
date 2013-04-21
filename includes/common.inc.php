@@ -39,6 +39,8 @@
 	        <script src="js/jquery.tagsinput.js"></script>
 	        <script src="js/jquery.mobile.pagination.js"></script>    
 	        <script src="js/validate.js"></script>
+	        <script src="js/store_json2.min.js"></script>
+	        
 	        
 EOT;
 		}
@@ -57,7 +59,7 @@ EOT;
 		}
 		public function commonFooter () {
 			echo <<<EOT
-			   <div data-theme="c" data-role="footer" data-position="fixed" class="footer">
+			   <div data-theme="c" data-role="footer" class="footer">
                		<h3 >
                     	<div>powered by <img src="images/logo-lores.png" /></div>
                     </h3>
@@ -76,5 +78,28 @@ EOT;
 	}
 	function getData($str) {
 		return json_decode(urldecode($str));
+	}
+	function fetchData($url) {
+		$serverName = $_SERVER['SERVER_NAME'];
+		return json_decode(file_get_contents("http://${serverName}/$url"));
+	}
+	function getWhereParams($data){
+		$whereClause = "";
+   	   	$i=1;
+   	   	$paramList = array();
+		foreach($data as $key=>$par){
+			if ($par != '') {
+				$varNum = '$'.$i;
+				$and = "";
+				if ($i != 1){
+					$and = " AND";
+				}
+				$whereClause .= "$and ${key} = $varNum";
+				array_push($paramList,  $data->$key);
+				$i++;
+			}
+			
+		}
+		return array($whereClause,$paramList);
 	}
 ?>

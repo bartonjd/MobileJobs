@@ -65,7 +65,7 @@ $page = new Page();
 			        	serviceUrl: 'includes/client-ajax/autocomplete.php',
 			        	params:{action:'city_list',state:''},
 			        	onSearchStart:function(params){
-				        	params.state = $('#state').attr('value');
+				        	params.state = $('#state').val();
 			        	},
 			        	paramName:'query'
 		        	});
@@ -75,15 +75,17 @@ $page = new Page();
 			        	params:{action:'tag_list',state:''},
 			        	paramName:'query',
 			        	onSelect:function(suggestion){
-				        	$('#tag-area').addTag($('input[name=tag]').attr('value'));
+			        			try{
+				        	$('#tag-area').addTag($('input[name=tag]').val());
+				        		}catch(ex){console.log(ex);}
 
 			        	},
 			        	onNoResult:function(){
-			        		var data ={tag_name: $('input[name=tag]').attr('value')};
+			        		var data ={tag_name: $('input[name=tag]').val()};
 			        		//set to data get variable, url encode json string
 			        		var dataString = 'data='+ encodeURIComponent($.encodeJSON(data));
 			        		
-			        		$('#tag-area').addTag($('input[name=tag]').attr('value'));
+			        		$('#tag-area').addTag($('input[name=tag]').val());
 			        		
 			        		$.ajax({
 						        type: "POST",
@@ -100,7 +102,6 @@ $page = new Page();
 				    $('#tag-area').tagsInput({
 				    	interactive:false,
 				    	height:60,
-				    	delimiter:' ',
 				    	width:700,
 				    	onRemoveTag:function(tag){
 					    	var val = $('#tags').val().replace(/^[ ,]{2}/,'');
@@ -212,8 +213,8 @@ $page = new Page();
                <div data-role="fieldcontain">
                   <label for="internship">Internship</label>
                   <select name="internship" id="internship" data-role="slider" data-theme="d">
-                     <option value="f">Off</option>
-                     <option value="t" >On</option>
+                     <option value="f">No</option>
+                     <option value="t" >Yes</option>
                   </select>
                </div>
                 <input type="submit" data-theme="b" data-icon="check" data-iconpos="left" value="Add Opportunity" />

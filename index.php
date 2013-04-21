@@ -40,8 +40,9 @@ $page = new Page();
 	        });
 
                   
-         $(document).delegate('#search-page','pagecreate',function() {
+         $(document).delegate('#search-page','pageshow',function() {
 	     	var docURL = window.location; 
+	     		if(window.ranOnce != 1){
     	           $('#state').mobiscroll().select({
 	    			        theme: 'ios',
 					        display: 'top',
@@ -66,16 +67,18 @@ $page = new Page();
 					$('#tags').tagsInput({
 						
 					});
+					window.ranOnce = 1;
+				}
 
-				var valid = $('form').validate();
+				var valid = $('form#search-form').validate();
 				$('form input[type=button]').on('click',function(e){
 
-					 var valid = $('form').validate();
+					 var valid = $('form#search-form').validate();
 		        		if (valid.errorList.length >0){
 
 			        		return false;
 		        		}
-		        		var data =$.serializeForm($('form'));
+		        		var data =$.serializeForm($('form#search-form'));
 			        	//set to data get variable, url encode json string
 			        	var dataString = 'data='+ encodeURIComponent($.encodeJSON(data));
 			        	$.ajax({
@@ -86,7 +89,12 @@ $page = new Page();
 					        success: function(data,status) {
 					        	if (data.success == true){
 						       // 	$.mobile.loadPage('searchResults.php?options=' + encodeURIComponent($.encodeJSON(data.options))+'&search='+encodeURIComponent($.encodeJSON(data.search)),{pageContainer:$('#search-results-page'),changeHash:true});
-						        	$('#search-results-page').load('searchResults.php?options=' + encodeURIComponent($.encodeJSON(data.options))+'&search='+encodeURIComponent($.encodeJSON(data.search)), function () {
+						       		//clear any previous search settings
+						       		store.clear();
+						       		//store the search options
+						       		store.set('searchParams',{options:data.options,search:data.search});
+						       		
+						        	$('#search-results-page').load('searchResults.php',{options:$.encodeJSON(data.options),search:$.encodeJSON(data.search)}, function () {
 									    $(this).trigger('create');
 									    $.mobile.changePage('#search-results-page');
 									});
@@ -115,23 +123,31 @@ $page = new Page();
 				});
 
             });
-            $(document).delegate('#search-results-page','pageshow',function(){
+            $(document).delegate('#search-results-page','pagecreate',function(){
 	           var docURL = window.location;	
 	        	$('tr.sres').bind('tap click',function(){
 		        	var id = $(this).attr('id');
 		        	//consider saving options to url or adding a back button
-		        	$('#job-detail-page').load('result.php?opp='+id,function(){
-			        	$(this).trigger('create');
-						$.mobile.changePage('#search-results-page');
+		        	$('#job-detail-page').load('result.php?opp_id='+id,function(){
+						
+						$(this).trigger('create');
+						$.mobile.changePage('#job-detail-page');
 		        	});
 
 	        	});
-
+	        	$('.paging-sres').bind('tap click',function(){
+	        	
+		        	$('#searchs-result-page').load($(this).attr('url'),function(){
+			        		
+						$(this).trigger('create');
+						$.mobile.changePage('#search-results-page');
+					});
+				});
             });
         </script>
     </head>
     <body>
-        <div  data-role="page" data-theme="c" data-add-back-btn="true">
+        <div  data-role="page" data-theme="c" id="home-page">
         	<div data-theme="c" data-role="header" class="header">
 		        <?php $page->commonHeader(); ?>
 				<div>
@@ -204,16 +220,16 @@ $page = new Page();
             
             <!-- Job Detail  Page -->
             <div data-role="page" id="job-detail-page" data-add-back-btn="true" data-theme="c">
-                <?php 
-               //     include('result.php');
-                ?>
+
             </div>           
             <!-- End Job Detail Page -->
             
             <!-- Notification Settings Page -->
             <div data-role="page" id="notify-page" data-add-back-btn="true" data-theme="c">
-                <?php 
-                    include('notify.php');
+                <?php
+                    if ($linkedIn->isLoggedIn()){
+                    	include('notify.php');
+                    }
                 ?>
             </div>           
             <!-- End Notification Settings Page -->
@@ -221,7 +237,9 @@ $page = new Page();
             <!-- Saved Jobs Page -->
             <div data-role="page" id="saved-jobs-page" data-add-back-btn="true" data-theme="c">
                 <?php 
-                    //include('savedresult.php');
+                    if ($linkedIn->isLoggedIn()){
+                    	//include('savedresult.php');
+                    }
                 ?>
             </div>           
             <!-- End Saved Jobs Page -->

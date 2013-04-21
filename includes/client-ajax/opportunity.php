@@ -1,6 +1,6 @@
 <?php
    set_include_path ('/home/jbarton/public_html/');
-   include('includes/common.inc.php');
+   include_once('includes/common.inc.php');
    $page = new Page();
    $linkedIn = $page->getLinkedIn();
    
@@ -21,25 +21,39 @@
 	       $jtb = new JSONTableBridge('tags', null, array(), $db);
 	       $jtb->CREATE($data);
 	   break;
+	   case 'job_details':
+	   		$db = connect2DB();
+	   		$sql = "SELECT opportunity_description,opportunity_name, city,state,pay_type,organization,schedule_type,CASE WHEN internship = 't' THEN 'Yes' ELSE 'No' END as internship FROM opportunities WHERE opportunity_id = $1";
+	   		$params = array((integer)$_REQUEST['opp_id']);
+	   		
+	        $query = pg_query_params($db, $sql,$params);
+	        $result = pg_num_rows($query);
+	        if($result == 1) {
+		        $returnData = pg_fetch_all($query);
+		        die(json_encode($returnData));
+	        }
+	   break;
 	   case 'search_jobs':
 	   		$data = getData($_REQUEST['data']);
 	   	   	$db = connect2DB();
-		    $sql = 'SELECT * FROM opportunities WHERE city = $1 OR state = $2 OR organization = $3';
-		    $sql .= ' OR schedule_type = $4 OR pay_type = $5 OR internship = $6';
-		    
-		    $params =  createParams($data->city,$data->state,$data->organization,$data->schedule_type,$data->pay_type,$data->internship);
+	   	   	$whereArray = getWhereParams($data);
+	   	   	
+			//$params =  createParams($paramList);
 
-	        $query = pg_query_params($db, $sql,$params);
+		    $sql = 'SELECT * FROM opportunities WHERE '.$whereArray[0];
+die($sql);
+	        $query = pg_query_params($db, $sql,$whereArray[1]);
 	        $result = pg_num_rows($query);
 	        
 	        if($result >0) {
 		        $optionsObj = new stdClass;
 		        $optionsObj->limit = 10; 
+		        $optionsObj->results = $result;
 		        $optionsObj->page = 1;
 		        $optionsObj->pages = ceil($result/$optionsObj->limit);
 		        $optionsObj->start = 0;
 	
-		        $returnObj = array('options'=>$optionsObj,'search'=>$params,'success'=>true);
+		        $returnObj = array('options'=>$optionsObj,'search'=>$data,'success'=>true);
 		    } else {
 			    $returnObj = array('payload'=>array(),'errors'=>'No Results Found','success'=>false);
 		    }
@@ -47,7 +61,7 @@
 	   break;
 
    } 
-   function createParams($city='',$state='',$organization='', $schedule_type='',$pay_type='',$intern){
+   function createParams($city='',$state='',$organization='', $schedule_type='',$pay_type='',$intern=''){
        $params = array($city,$state,$organization, $schedule_type,$pay_type,$intern);
        return $params;   
    }
