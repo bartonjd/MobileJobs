@@ -1,136 +1,82 @@
 <?php
 set_include_path ('/home/jbarton/public_html/');
-include('savedresults.php');
 include('resources/common.inc.php');
-include('resources/client-ajax/autocomplete.php');
+$page = new Page();
+$linkedIn = $page->getLinkedIn();
+$options = getData($_REQUEST['options']);
+if (isset($_REQUEST['search'])){
+	$searchTerms = json_decode($_REQUEST['search']);
+}
+$options->start = ($options->page-1) * $options->limit;
+$userAccount = $linkedIn->getUserData();
+$email = $userAccount['email_address'];
 
+function listSavedJobs($params,$options,$email){
+   	  	$db = connect2DB();
+   	  	
+   	   	$whereArray = getWhereParams($params);
+   	   	$limit = $options->limit;
+   	   	$offset = $options->start;
+	    $sql  = <<<EOT
+	    	SELECT o.opportunity_id, opportunity_name, to_char(date_added::date, 'Month dd, YYYY') as date_added,city,state,
+	    		CASE WHEN pay_type = 'paid'    THEN 'Paid'
+	    			 WHEN pay_type = 'unpaid'   THEN 'Un-Paid'
+	    			 WHEN pay_type = 'contract' THEN 'Contract'
+	    			
+	    		END as pay_type,
+	    		CASE WHEN schedule_type = 'ft'
+	    			THEN 'Full-Time'
+	    			ELSE 'Part-Time'
+	    		END as schedule_type,
+	    		CASE WHEN internship = 't'
+	    			THEN 'Internship' 
+	    			ELSE '' 
+	    		END as internship 
+	    	FROM opportunities o JOIN saved_opportunities s ON (o.opportunity_id = s.opportunity_id)
+	    						 JOIN users u ON (u.user_id = s.user_id AND u.email_address = '$email')
+	    	  ${whereArray[0]} LIMIT $limit OFFSET $offset
+EOT;
+
+        $query = pg_query_params($db, $sql, $whereArray[1]);
+        $result = pg_num_rows($query);
+
+        if ($result > 0) {
+	       $search_results = pg_fetch_all($query);
+	       	$html = '<ul data-role="listview" data-inset="true">';
+	       	$i = 1;
+	       	$markup = "";  	   	   			
+	    	foreach($search_results as $row){
+	    		$oppId = $row['opportunity_id'];
+		        $markup = <<<EOT
+		        		${markup}\n 
+		           	    <li data-role="list-divider"><span class="icon-star star-color">&#x73;</span>${row['opportunity_name']}<span class="ui-li-count">$i</span></li>
+					    <li class="sres" opp_id="${row['opportunity_id']}"><a href="#">
+					        <h2></h2>
+					        <p class="job-small-label">${row['internship']}</p>
+					        <p class="job-small-label"><strong>Hours: ${row['schedule_type']}</strong></p>
+					        <p class="job-small-label"><strong>Pay:   ${row['pay_type']}</strong></p>
+					        <p class="job-small-label">${row['city']}, ${row['state']}</p>
+					        <p class="ui-li-aside">${row['date_added']}</p>
+					    </a></li>
+EOT;
+	       	 	$i++;
+	       }
+	       $html .="$markup </ul>\n";
+	       return $html;
+        }
+}
+
+	$resultHtml =  listSavedJobs($searchTerms,$options,$email);
 ?>
-        <!-- Home -->
-        <div data-role="page" id="page1">
-            <div data-theme="c" data-role="header" class="header">
-                <h1>
-                    Utah State University
-                </h1>
-				<div>
-                        <img style="width: 288px; height: 100px" src="http://huntsman.usu.edu/mis/images/uploads/site/topbars/MIS1.jpg" />
-                </div>
-				<h2>
-                    Opportunities
-                </h2>
-				            
-                  
-                
-                
-            </div>
-            <div data-role="content">
-                <div data-role="fieldcontain">
-                    <fieldset data-role="controlgroup">
-                        <table>
-						<tr>
-						<td>
-						<label>
-                            Opportunity Name:
-                        </label>
-						</td>
-						<td>
-                       <label>
-                            Opportunity Description:
-                        </label>
-						</td>
-						<td>
-						 <label>
-                            City:
-                        </label>
-						</td>
-						<td>
-						<label>
-                            State:
-                        </label>
-						</td>
-						<td>
-						<label>
-                            Organization/Company:
-                        </label>
-						</td>
-						<td>
-						<label>
-                            Pay Type:
-                        </label>
-						</td>
-						<td>
-						<label>
-                            Schedule Type:
-                        </label>
-						</td>
-						<td>
-						<label>
-                            Internship:
-                        </label>
-						</td>
-						</tr>
-						<tr>
-						<td>
-						<label>
-							placeholder for name
-						</label>
-						</td>
-						<td>
-						 <label>
-							placeholder for description
-						</label>
-						</td>
-						<td>
-						<label>
-							placeholder for city
-						</label>
-						</td>
-						<td>
-						<label>
-							placeholder for state
-						</label>
-						</td>
-						<td>
-						<label>
-							placeholder for organization/company
-						</label>
-						</td>
-						<td>
-						<label>
-							placeholder for pay type
-						</label>
-						</td>
-						<td>
-						<label>
-							placeholder for schedule type
-						</label>
-						</td>
-						<td>
-						 <div id="checkboxes1" data-role="fieldcontain" >
-						<input id="checkbox1" name="Yes" type="checkbox" />
-                        <label for="checkbox1" >
-                            Yes
-                        </label>
-                    </fieldset>
-            </div>
-						</td>
-						</tr>
-						
-						</table>
-						
-                    </fieldset>
-                </div>
-                
-						
-                        
-                </div>
-               
-            <div data-theme="c" data-role="footer" data-position="fixed" class="footer">
-                <h3>
-                    <img style="width: 288px; height: 100px" src="logo.png" />
-                </h3>
-            </div>
-        </div>
-  
-
-        
-           <?php $page->commonFooter(); ?>
+			<?php $page->commonHeader(); ?>
+			<div data-theme="c" data-role="none" class="header ui-header ui-bar-c" role="banner">
+	         	<h2 class="ui-title" role="heading">Saved Jobs</h2>
+	      	</div>
+        <form>
+	        <div data-role="content">
+				<div data-role="fieldcontain">
+					<?php echo $resultHtml; ?>
+				</div>
+			</div>
+        </form>
+        <?php $page->commonFooter(); ?>
