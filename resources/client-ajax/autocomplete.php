@@ -1,7 +1,7 @@
 <?php
 set_include_path ('/home/jbarton/public_html/');
 
-require_once('includes/jsonTableBridge.php');
+require_once('resources/jsonTableBridge.php');
 $db = connect2DB();
 
 switch ($_REQUEST['action']){

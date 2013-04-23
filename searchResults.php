@@ -1,6 +1,6 @@
 <?php
 set_include_path ('/home/jbarton/public_html/');
-include('includes/common.inc.php');
+include('resources/common.inc.php');
 $page = new Page();
 $linkedIn = $page->getLinkedIn();
 $options = getData($_REQUEST['options']);
@@ -9,93 +9,71 @@ if (isset($_REQUEST['search'])){
 }
 $options->start = ($options->page-1) * $options->limit;
 
-$nextPage = $options->page+1;
-$prevPage = $options->page-1;
 
-if($prevPage == -1) {
-	$noPrev = true;
-	$noNext = false;
-}
-
-if($nextPage >= $options->pages) {
-	//This is the last page
-	$noNext = true;
-}
-if($options->page == 1){
-		$noPrev = true;
-} else{
-		$noPrev = false;
-}
 
 function listJobs($params,$options){
    	  	$db = connect2DB();
    	   	$whereArray = getWhereParams($params);
    	   	$limit = $options->limit;
    	   	$offset = $options->start;
-	    $sql  = "SELECT opportunity_id, opportunity_name, city,state,pay_type,schedule_type,CASE WHEN internship = 't' THEN 'Yes' ELSE 'No' END as internship FROM opportunities WHERE ";	
-	    $sql .= $whereArray[0]." LIMIT $limit OFFSET $offset";
-	  //  die($sql);
+	    $sql  = <<<EOT
+	    	SELECT opportunity_id, opportunity_name, to_char(date_added::date, 'Month dd, YYYY') as date_added,city,state,
+	    		CASE WHEN pay_type = 'paid'    THEN 'Paid'
+	    			 WHEN pay_type = 'unpaid'   THEN 'Un-Paid'
+	    			 WHEN pay_type = 'contract' THEN 'Contract'
+	    			
+	    		END as pay_type,
+	    		CASE WHEN schedule_type = 'ft'
+	    			THEN 'Full-Time'
+	    			ELSE 'Part-Time'
+	    		END as schedule_type,
+	    		CASE WHEN internship = 't'
+	    			THEN 'Internship' 
+	    			ELSE '' 
+	    		END as internship 
+	    	FROM opportunities ${whereArray[0]} LIMIT $limit OFFSET $offset
+EOT;
+
         $query = pg_query_params($db, $sql, $whereArray[1]);
         $result = pg_num_rows($query);
 
         if ($result > 0) {
 	       $search_results = pg_fetch_all($query);
-	       	   $html = "<table data-role=\"table\" data-mode=\"reflow\" id=\"my-table\">
-	       	   	   <thead>\n
-	       	   	   		<tr>\n
-	       	   	   			<th>Name</th>\n
-	       	   	   			<th>City</th>\n
-	       	   	   			<th>State</th>\n
-	       	   	   			<th>Pay Type</th>\n
-	       	   	   			<th>Schedule Type</th>
-	       	   	   			<th>Internship</th>
-	       	   	   		</tr>
-	       	   	   	</thead><tbody>";	       	   	   			
+	       	$html = '<ul data-role="listview" data-inset="true">';
+	       	$i = 1;
+	       	$markup = "";  	   	   			
 	    	foreach($search_results as $row){
 	    		$oppId = $row['opportunity_id'];
-		        $html .= "<tr id=\"$oppId\" class=\"sres ui-btn  ui-shadow ui-btn-up-c ui-corner-all ui-body-c\">\n";
-
-       		    foreach($row as $key=>$value){
-       		    	if ($key != 'opportunity_id') {
-	       		    	$html .= "<td>$value</td>\n";
-	       		    }
-	       	    }
-	         	$html .="</tr>\n";
+		        $markup = <<<EOT
+		        		${markup}\n 
+		           	    <li data-role="list-divider"><span class="icon-star star-color">&#x73;</span>${row['opportunity_name']}<span class="ui-li-count">$i</span></li>
+					    <li class="sres" opp_id="${row['opportunity_id']}"><a href="#">
+					        <h2></h2>
+					        <p class="job-small-label">${row['internship']}</p>
+					        <p class="job-small-label"><strong>Hours: ${row['schedule_type']}</strong></p>
+					        <p class="job-small-label"><strong>Pay:   ${row['pay_type']}</strong></p>
+					        <p class="job-small-label">${row['city']}, ${row['state']}</p>
+					        <p class="ui-li-aside">${row['date_added']}</p>
+					    </a></li>
+EOT;
+	       	 	$i++;
 	       }
-	       $html .= '</tbody></table>';
+	       $html .="$markup </ul>\n";
 	       return $html;
         }
 }
 
-$resultHtml =  listJobs($searchTerms,$options);
+	$resultHtml =  listJobs($searchTerms,$options);
 ?>
-
-        	<ul data-role="pagination" style="cursor:pointer;>
-	        	<?php
-			        		if (!$noPrev){
-				        		echo <<<EOT
-				        		<li class="paging-sres ui-pagination-prev" style="cursor:pointer;" url="$url_prev"><a href="#">Prev</a></li>
-EOT;
-							}
-							if (!$noNext){
-				        		echo <<<EOT
-				        		<li class="paging-sres  ui-pagination-next" style="cursor:pointer;" url="$url_next"><a href="#NEXT">Next</a></li>
-EOT;
-							}
-						?>
-			</ul>    
-
-			<div data-theme="c" data-role="header" class="header">
-         		<?php $page->commonHeader(); ?>
-	         	<h2>Search Results</h2>
-	      	 </div>
+			<?php $page->commonHeader(); ?>
+			<div data-theme="c" data-role="none" class="header ui-header ui-bar-c" role="banner">
+	         	<h2 class="ui-title" role="heading">Search Results</h2>
+	      	</div>
         <form>
-        <div data-role="content">
-
-			<div data-role="fieldcontain" style="margin:5px 25px 30px 25px;">
-				<div>Found <?php echo $options->results;?> results</div>
-				<?php echo $resultHtml; ?>
+	        <div data-role="content">
+				<div data-role="fieldcontain">
+					<?php echo $resultHtml; ?>
+				</div>
 			</div>
-		</div>
         </form>
         <?php $page->commonFooter(); ?>

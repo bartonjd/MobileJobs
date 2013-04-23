@@ -1,6 +1,6 @@
 <?php
    set_include_path ('/home/jbarton/public_html/');
-   include_once('includes/common.inc.php');
+   include_once('resources/common.inc.php');
    $page = new Page();
    $linkedIn = $page->getLinkedIn();
    
@@ -23,7 +23,21 @@
 	   break;
 	   case 'job_details':
 	   		$db = connect2DB();
-	   		$sql = "SELECT opportunity_description,opportunity_name, city,state,pay_type,organization,schedule_type,CASE WHEN internship = 't' THEN 'Yes' ELSE 'No' END as internship FROM opportunities WHERE opportunity_id = $1";
+	   		$sql = "SELECT opportunity_description,opportunity_name, city,state,pay_type,organization,to_char(date_added::date, 'Month dd, YYYY') as date_added,
+		   				CASE WHEN pay_type = 'paid'    THEN 'Paid'
+			    			 WHEN pay_type = 'unpaid'   THEN 'Un-Paid'
+			    			 WHEN pay_type = 'contract' THEN 'Contract'
+			    			 ELSE ''
+			    		END as pay_type,
+			    		CASE WHEN schedule_type = 'ft'
+			    			THEN 'Full-Time'
+			    			ELSE 'Part-Time'
+			    		END as schedule_type,
+			    		CASE WHEN internship = 't'
+			    			THEN 'Internship' 
+			    			ELSE '' 
+			    		END as internship 
+			    	FROM opportunities WHERE opportunity_id = $1";
 	   		$params = array((integer)$_REQUEST['opp_id']);
 	   		
 	        $query = pg_query_params($db, $sql,$params);
@@ -40,14 +54,14 @@
 	   	   	
 			//$params =  createParams($paramList);
 
-		    $sql = 'SELECT * FROM opportunities WHERE '.$whereArray[0];
-die($sql);
+		    $sql = 'SELECT * FROM opportunities '.$whereArray[0];
+
 	        $query = pg_query_params($db, $sql,$whereArray[1]);
 	        $result = pg_num_rows($query);
 	        
 	        if($result >0) {
 		        $optionsObj = new stdClass;
-		        $optionsObj->limit = 10; 
+		        $optionsObj->limit = $result; 
 		        $optionsObj->results = $result;
 		        $optionsObj->page = 1;
 		        $optionsObj->pages = ceil($result/$optionsObj->limit);

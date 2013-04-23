@@ -15,14 +15,14 @@
     	public function getLinkedIn(){
     		return $this->linkedIn;
     	}
-    	public function commonIncludes(){
+    	public function commonresources(){
         	echo <<<EOT
 	        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 	        <link rel="apple-touch-icon" href="apple-touch-icon.png"/>
 	        <link rel="apple-touch-icon" sizes="114x114" href="images/iPhoneIcon_Big.png" />
 			<link rel="apple-touch-icon" sizes="72x72" href="images/iPhoneIcon_Medium.png" />
 			<link rel="apple-touch-icon" href="images/iPhoneIcon_Small.png" />
-			<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+			<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 			<meta name="apple-mobile-web-app-capable" content="yes">
 	        <title></title>
 	        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
@@ -33,13 +33,12 @@
 	        
 	        <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 	        <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
-	        <script src="js/autocomplete.js"></script>
+	        <script src="js/plugins/autocomplete.js"></script>
 	        <script src="js/my.js"></script>
-	        <script src="js/mobiscroll.2.5.0.min.js"></script>
-	        <script src="js/jquery.tagsinput.js"></script>
-	        <script src="js/jquery.mobile.pagination.js"></script>    
-	        <script src="js/validate.js"></script>
-	        <script src="js/store_json2.min.js"></script>
+	        <script src="js/plugins/mobiscroll.2.5.0.min.js"></script>
+	        <script src="js/plugins/jquery.tagsinput.js"></script> 
+	        <script src="js/plugins/validate.js"></script>
+	        <script src="js/plugins/store_json2.min.js"></script>
 	        
 	        
 EOT;
@@ -99,6 +98,10 @@ EOT;
 				$i++;
 			}
 			
+		}
+		if ($i > 1){	
+			//If there was at least one parameter passed in
+			$whereClause = "WHERE $whereClause";
 		}
 		return array($whereClause,$paramList);
 	}

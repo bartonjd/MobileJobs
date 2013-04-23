@@ -1,5 +1,5 @@
 <?php
-require_once('includes/jsonTableBridge.php');
+require_once('resources/jsonTableBridge.php');
 // include the LinkedIn class
 require_once('linkedin_3.2.0.class.php');
 /**
@@ -126,8 +126,8 @@ class LinkedInAuthMgr {
                             header('Location: '.LINKEDIN::_URL_AUTH.$response['linkedin']['oauth_token']);
                         } else {
                             // bad token request
-                            $this->logError("Request token retrieval failed:<br /><br />RESPONSE:<br /><br /><pre>".print_r($response, TRUE).
-                            "</pre><br /><br />LINKEDIN OBJ:<br /><br /><pre>".print_r($OBJ_linkedin, TRUE).
+                            $this->logError("Request token retrieval failed:<br /><br />RESPONSE:<br /><br /><pre>".json_decode($response).
+                            "</pre><br /><br />LINKEDIN OBJ:<br /><br /><pre>".json_encode($OBJ_linkedin).
                             "</pre>");
                         }
                     } else {
@@ -145,8 +145,8 @@ class LinkedInAuthMgr {
                             header('Location: '.$_SERVER['PHP_SELF']);
                         } else {
                             // bad token access
-                            $this->logError("Access token retrieval failed:<br /><br />RESPONSE:<br /><br /><pre>".print_r($response, TRUE).
-                            "</pre><br /><br />LINKEDIN OBJ:<br /><br /><pre>".print_r($OBJ_linkedin, TRUE).
+                            $this->logError("Access token retrieval failed:<br /><br />RESPONSE:<br /><br /><pre>".json_encode($response).
+                            "</pre><br /><br />LINKEDIN OBJ:<br /><br /><pre>".json_encode($OBJ_linkedin).
                             "</pre>");
                         }
                     }
@@ -179,8 +179,8 @@ class LinkedInAuthMgr {
                         }
                     } else {
                         // revocation failed
-                        $this->logError("Error revoking user's token:<br /><br />RESPONSE:<br /><br /><pre>".print_r($response, TRUE).
-                        "</pre><br /><br />LINKEDIN OBJ:<br /><br /><pre>".print_r($OBJ_linkedin, TRUE).
+                        $this->logError("Error revoking user's token:<br /><br />RESPONSE:<br /><br /><pre>".json_encode($response).
+                        "</pre><br /><br />LINKEDIN OBJ:<br /><br /><pre>".json_encode($OBJ_linkedin).
                         "</pre>");
                     }
                     break;
@@ -230,7 +230,7 @@ class LinkedInAuthMgr {
 
                         } else {
                             // request failed
-                            $this->logError("Error retrieving profile information:<br /><br />RESPONSE:<br /><br /><pre>" . print_r($response) . "</pre>");
+                            $this->logError("Error retrieving profile information:<br /><br />RESPONSE:<br /><br /><pre>" . json_encode($response) . "</pre>");
                         }
                     } else {
                         // user isn't connected
@@ -319,6 +319,7 @@ class LinkedInAuthMgr {
         }
     }
     private function logError($msg){
+    	error_log($msg);
 	    array_push($this->errorMsg,$msg);
 	    
     }

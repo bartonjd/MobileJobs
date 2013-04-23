@@ -1,7 +1,7 @@
 <?php
 set_include_path ('/home/jbarton/public_html/');
-include('includes/common.inc.php');
-include('includes/client-ajax/autocomplete.php');
+include('resources/common.inc.php');
+include('resources/client-ajax/autocomplete.php');
 $page = new Page();
 
  $linkedIn = $page->getLinkedIn();
@@ -13,7 +13,7 @@ $page = new Page();
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-            <?php $page->commonIncludes(); ?>
+            <?php $page->commonresources(); ?>
 
         <!-- User-generated css -->
         <style>
@@ -40,7 +40,7 @@ $page = new Page();
 			        	//Need to attach tags to opportunity record
 		        		$.ajax({
 					        type: "POST",
-					        url: 'includes/client-ajax/opportunity.php?action=add_opportunity',
+					        url: 'resources/client-ajax/opportunity.php?action=add_opportunity',
 					        data: dataString,
 					        dataType: "json",
 					        success: function(data) {
@@ -56,13 +56,13 @@ $page = new Page();
 					  });
 		        	$('#state').autocomplete({
 		        		autoSelectFirst:true,
-			        	serviceUrl: 'includes/client-ajax/autocomplete.php',
+			        	serviceUrl: 'resources/client-ajax/autocomplete.php',
 			        	params:{action:'state_list',state:''},
 			        	paramName:'query'
 		        	});
 		        	$('#city').autocomplete({
 		        		autoSelectFirst:true,
-			        	serviceUrl: 'includes/client-ajax/autocomplete.php',
+			        	serviceUrl: 'resources/client-ajax/autocomplete.php',
 			        	params:{action:'city_list',state:''},
 			        	onSearchStart:function(params){
 				        	params.state = $('#state').val();
@@ -71,7 +71,7 @@ $page = new Page();
 		        	});
 		        	$('#tag').autocomplete({
 		        		autoSelectFirst:true,
-			        	serviceUrl: 'includes/client-ajax/autocomplete.php',
+			        	serviceUrl: 'resources/client-ajax/autocomplete.php',
 			        	params:{action:'tag_list',state:''},
 			        	paramName:'query',
 			        	onSelect:function(suggestion){
@@ -89,7 +89,7 @@ $page = new Page();
 			        		
 			        		$.ajax({
 						        type: "POST",
-						        url: 'includes/client-ajax/opportunity.php?action=add_tag',
+						        url: 'resources/client-ajax/opportunity.php?action=add_tag',
 						        data: dataString,
 						        dataType: "json",
 						        success: function(data) {

@@ -1,12 +1,11 @@
 <?php
 set_include_path ('/home/jbarton/public_html/');
-include('includes/client-ajax/autocomplete.php');
+include('resources/client-ajax/autocomplete.php');
 
 ?>
-
-            <div data-theme="c" data-role="header" class="header">
-                 <?php $page->commonHeader(); ?>
-				<h2>Search Job & Internship Opportunities</h2>
+            <?php $page->commonHeader(); ?>
+            <div data-theme="c" data-role="none" class="header ui-header ui-bar-c" rol="banner">
+				<h2 class="ui-title" role="heading">Search Job & Internship Opportunities</h2>
             </div>
             <form name="search-form" id="search-form">
             <div data-role="content">
@@ -64,12 +63,14 @@ include('includes/client-ajax/autocomplete.php');
                 </div>
 
                <div data-role="fieldcontain">
-                  <label for="internship">Internship</label>
-                  <select name="internship" id="internship" data-role="slider" data-theme="d">
-                  	 <option value=""></option>
-                     <option value="f">No</option>
-                     <option value="t" >Yes</option>
-                  </select>
+               	  <fieldset data-role="controlgroup">
+	                  <label for="internship">Internship</label>
+	                  <select name="internship" id="internship" data-role="none">
+	                  	 <option value=""></option>
+	                     <option value="f">No</option>
+	                     <option value="t" >Yes</option>
+	                  </select>
+                  </fieldset>
                </div>
                 <input type="button" data-icon="check" data-iconpos="left" value="Search" />
             </div>

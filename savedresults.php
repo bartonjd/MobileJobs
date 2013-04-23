@@ -1,8 +1,8 @@
 <?php
 set_include_path ('/home/jbarton/public_html/');
 include('savedresults.php');
-include('includes/common.inc.php');
-include('includes/client-ajax/autocomplete.php');
+include('resources/common.inc.php');
+include('resources/client-ajax/autocomplete.php');
 
 ?>
         <!-- Home -->
